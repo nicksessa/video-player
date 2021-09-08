@@ -157,10 +157,13 @@ let fullscreen = false;
 function toggleFullscreen() {
   if (!fullscreen) {
     openFullscreen(player);
+    fullscreen = true;
   } else {
     closeFullscreen();
+    fullscreen = false;
   }
-  fullscreen = !fullscreen;
+  //fullscreen = !fullscreen;
+  //console.log("after toggle btn fullscreen: ", fullscreen);
 }
 
 // Event Listeners
@@ -175,3 +178,22 @@ volumeIcon.addEventListener("click", toggleMute);
 speed.addEventListener("change", changeSpeed);
 
 fullscreenBtn.addEventListener("click", toggleFullscreen);
+
+document.addEventListener("fullscreenchange", exitHandler);
+document.addEventListener("webkitfullscreenchange", exitHandler);
+document.addEventListener("mozfullscreenchange", exitHandler);
+document.addEventListener("MSFullscreenChange", exitHandler);
+
+function exitHandler() {
+  if (
+    !document.fullscreenElement &&
+    !document.webkitIsFullScreen &&
+    !document.mozFullScreen &&
+    !document.msFullscreenElement
+  ) {
+    //closeFullscreen();
+    video.classList.remove("video-fullscreen");
+    fullscreen = false;
+  }
+  //console.log("fullscreen: ", fullscreen);
+}

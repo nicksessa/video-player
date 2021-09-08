@@ -49,7 +49,69 @@ function updateProgress() {
   duration.textContent = `${displayTime(video.duration)}`;
 }
 
+// Click to seek within the video
+function setProgress(e) {
+  const newTime = e.offsetX / progressRange.offsetWidth;
+  progressBar.style.width = `${newTime * 100}%`;
+  video.currentTime = newTime * video.duration;
+  //console.log(newTime);
+}
+
 // Volume Controls --------------------------- //
+
+let lastVolume = 1;
+
+// volume bar
+function changeVolume(e) {
+  let volume = e.offsetX / volumeRange.offsetWidth;
+  // Rounding volume up or down
+  if (volume < 0.1) {
+    volume = 0;
+  }
+  if (volume > 0.9) {
+    volume = 1;
+  }
+  volumeBar.style.width = `${volume * 100}%`;
+  video.volume = volume;
+  //console.log(volume);
+  // Change icon depending upon volume
+  volumeIcon.className = "";
+  if (volume >= 0.7) {
+    volumeIcon.classList.add("fas", "fa-volume-up");
+  } else if (volume < 0.7 && volume > 0) {
+    volumeIcon.classList.add("fas", "fa-volume-down");
+  } else if (volume === 0) {
+    volumeIcon.classList.add("fas", "fa-volume-off");
+  }
+
+  lastVolume = volume;
+}
+
+// mute and unmute
+function toggleMute() {
+  volumeIcon.className = "";
+
+  if (video.volume) {
+    lastVolume = video.volume;
+    video.volume = 0;
+    volumeBar.style.width = 0;
+    volumeIcon.classList.add("fas", "fa-volume-mute");
+    volumeIcon.setAttribute("title", "Unmute");
+  } else {
+    video.volume = lastVolume;
+    volumeBar.style.width = `${lastVolume * 100}%`;
+
+    if (lastVolume > 0.5) {
+      volumeIcon.classList.add("fas", "fa-volume-up");
+    } else if (lastVolume > 0) {
+      volumeIcon.classList.add("fas", "fa-volume-down");
+    } else if (lastVolume === 0) {
+      volumeIcon.classList.add("fas", "fa-volume-off");
+    }
+
+    volumeIcon.setAttribute("title", "Mute");
+  }
+}
 
 // Change Playback Speed -------------------- //
 
@@ -60,3 +122,7 @@ playBtn.addEventListener("click", togglePlay);
 video.addEventListener("click", togglePlay);
 video.addEventListener("timeupdate", updateProgress);
 video.addEventListener("canplay", updateProgress);
+
+progressRange.addEventListener("click", setProgress);
+volumeRange.addEventListener("click", changeVolume);
+volumeIcon.addEventListener("click", toggleMute);
